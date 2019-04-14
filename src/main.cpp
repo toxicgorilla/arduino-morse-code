@@ -3,12 +3,15 @@
 #include "morse-code.h"
 #include "chars.h"
 
-const int wordsPerMinute = 10;
-const String message = "EVERY DAY IS CASPER DAY";
+const int wordsPerMinute = 30;
+const String message = "EVERY DAY IS REMI DAY";
 
 boolean doRunProgram;
 String morseCodeForMessage;
 int millisecondsPerUnit;
+int buzzerPin = 13;
+int redLedPin = 2;
+int greenLedPin = 3;
 
 boolean isCharacterValid(char character);
 boolean parametersAreValid(int wordsPerMinute, String message);
@@ -35,6 +38,10 @@ void setup()
   }
 
   pinMode(LED_BUILTIN, OUTPUT);
+  pinMode(13, OUTPUT);
+
+  pinMode(redLedPin, OUTPUT);
+  pinMode(greenLedPin, OUTPUT);
 
   const float secondsPerUnit = 60.0 / (float)(50 * wordsPerMinute);
   millisecondsPerUnit = (int)(secondsPerUnit * 1000.0);
