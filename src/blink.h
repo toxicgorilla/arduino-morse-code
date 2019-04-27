@@ -1,8 +1,8 @@
 #include <Arduino.h>
 
-void blinkDot(int millisecondsPerUnit);
+void blinkDot(int millisecondsPerUnit, int frequency);
 
-void blinkDash(int millisecondsPerUnit);
+void blinkDash(int millisecondsPerUnit, int frequency);
 
 void blinkDotDashSpacer(int millisecondsPerUnit);
 

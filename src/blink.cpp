@@ -2,27 +2,26 @@
 #include "blink.h"
 #include "log.h"
 
-extern uint8_t potentiometerPin;
 extern uint8_t buzzerPin;
 extern uint8_t redLedPin;
 extern uint8_t greenLedPin;
 
-void blinkDot(int millisecondsPerUnit)
+void blinkDot(int millisecondsPerUnit, int frequency)
 {
   LogDebug("blinkDot");
 
   digitalWrite(redLedPin, HIGH);
-  tone(buzzerPin, 800);
+  tone(buzzerPin, frequency);
 
   delay(millisecondsPerUnit);
 }
 
-void blinkDash(int millisecondsPerUnit)
+void blinkDash(int millisecondsPerUnit, int frequency)
 {
   LogDebug("blinkDash");
 
   digitalWrite(greenLedPin, HIGH);
-  tone(buzzerPin, 800);
+  tone(buzzerPin, frequency);
 
   delay(millisecondsPerUnit * 3);
 }

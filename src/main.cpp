@@ -5,10 +5,9 @@
 #include "morse-code.h"
 #include "chars.h"
 
-#define PIN_A13 13;
-
-uint8_t potentiometerPin = PIN_A1;
-uint8_t buzzerPin = PIN_A13;
+uint8_t speedPin = PIN_A1;
+uint8_t pitchPin = PIN_A2;
+uint8_t buzzerPin = PIN5;
 uint8_t redLedPin = PIN2;
 uint8_t greenLedPin = PIN3;
 
@@ -57,13 +56,17 @@ void loop()
     return;
   }
 
-  const int potentiometerValue = analogRead(potentiometerPin);
-  LogDebug("potentiometerValue", potentiometerValue);
+  const int speedPinValue = analogRead(speedPin);
+  LogDebug("speedPinValue", speedPinValue);
 
-  const int wordsPerMinute = map(potentiometerValue, 0, 1023, 0, 60);
+  const int wordsPerMinute = map(speedPinValue, 0, 1023, 0, 60);
   const float secondsPerUnit = 60.0 / (float)(50 * wordsPerMinute);
   const int millisecondsPerUnit = (int)(secondsPerUnit * 1000.0);
   LogDebug("millisecondsPerUnit", millisecondsPerUnit);
+
+  const int pitchPinValue = analogRead(pitchPin);
+  LogDebug("pitchPinValue", pitchPinValue);
+  const int frequency = pitchPinValue;
 
   LogTrace("index", index);
 
@@ -79,11 +82,11 @@ void loop()
     switch (currentChar)
     {
     case DOT:
-      blinkDot(millisecondsPerUnit);
+      blinkDot(millisecondsPerUnit, frequency);
       break;
 
     case DASH:
-      blinkDash(millisecondsPerUnit);
+      blinkDash(millisecondsPerUnit, frequency);
       break;
 
     case SLASH:
