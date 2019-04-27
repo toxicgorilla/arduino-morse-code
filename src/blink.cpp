@@ -1,67 +1,76 @@
 #include <Arduino.h>
 #include "blink.h"
+#include "log.h"
+
+extern uint8_t potentiometerPin;
+extern uint8_t buzzerPin;
+extern uint8_t redLedPin;
+extern uint8_t greenLedPin;
 
 void blinkDot(int millisecondsPerUnit)
 {
-  digitalWrite(LED_BUILTIN, HIGH);
-  digitalWrite(2, HIGH);
-  tone(13, 440);
+  LogDebug("blinkDot");
+
+  digitalWrite(redLedPin, HIGH);
+  tone(buzzerPin, 800);
 
   delay(millisecondsPerUnit);
 }
 
 void blinkDash(int millisecondsPerUnit)
 {
-  digitalWrite(LED_BUILTIN, HIGH);
-  digitalWrite(3, HIGH);
-  tone(13, 440);
+  LogDebug("blinkDash");
+
+  digitalWrite(greenLedPin, HIGH);
+  tone(buzzerPin, 800);
 
   delay(millisecondsPerUnit * 3);
 }
 
 void blinkDotDashSpacer(int millisecondsPerUnit)
 {
-  digitalWrite(LED_BUILTIN, LOW);
-  digitalWrite(2, LOW);
-  digitalWrite(3, LOW);
-  noTone(13);
+  LogDebug("blinkDotDashSpacer");
+
+  digitalWrite(redLedPin, LOW);
+  digitalWrite(greenLedPin, LOW);
+  noTone(buzzerPin);
 
   delay(millisecondsPerUnit);
 }
 
 void blinkCharacterSpacer(int millisecondsPerUnit)
 {
-  digitalWrite(LED_BUILTIN, LOW);
-  digitalWrite(2, LOW);
-  digitalWrite(3, LOW);
-  noTone(13);
+  LogDebug("blinkCharacterSpacer");
+
+  digitalWrite(redLedPin, LOW);
+  digitalWrite(greenLedPin, LOW);
+  noTone(buzzerPin);
 
   delay(millisecondsPerUnit * 3);
 }
 
 void blinkWordSpacer(int millisecondsPerUnit)
 {
-  digitalWrite(LED_BUILTIN, LOW);
-  digitalWrite(2, LOW);
-  digitalWrite(3, LOW);
-  noTone(13);
+  LogDebug("blinkWordSpacer");
+
+  digitalWrite(redLedPin, LOW);
+  digitalWrite(greenLedPin, LOW);
+  noTone(buzzerPin);
 
   delay(millisecondsPerUnit * 7);
 }
 
 void blinkMessageSpacer(int millisecondsPerUnit)
 {
-  delay(2000);
-  digitalWrite(LED_BUILTIN, LOW);
-  digitalWrite(2, LOW);
-  digitalWrite(3, LOW);
-  delay(2000);
-  digitalWrite(LED_BUILTIN, HIGH);
-  digitalWrite(2, HIGH);
-  digitalWrite(3, HIGH);
-  delay(2000);
-  digitalWrite(LED_BUILTIN, LOW);
-  digitalWrite(2, LOW);
-  digitalWrite(3, LOW);
-  delay(2000);
+  LogDebug("blinkMessageSpacer");
+
+  digitalWrite(redLedPin, LOW);
+  digitalWrite(greenLedPin, LOW);
+  delay(200);
+  digitalWrite(redLedPin, HIGH);
+  digitalWrite(greenLedPin, HIGH);
+  delay(1000);
+  digitalWrite(redLedPin, LOW);
+  digitalWrite(greenLedPin, LOW);
+  delay(200);
 }

@@ -1,114 +1,118 @@
 #include <Arduino.h>
+
+#include "log.h"
 #include "blink.h"
 #include "morse-code.h"
 #include "chars.h"
 
-const int wordsPerMinute = 30;
-const String message = "EVERY DAY IS REMI DAY";
+#define PIN_A13 13;
 
-boolean doRunProgram;
-String morseCodeForMessage;
-int millisecondsPerUnit;
-int buzzerPin = 13;
-int redLedPin = 2;
-int greenLedPin = 3;
+uint8_t potentiometerPin = PIN_A1;
+uint8_t buzzerPin = PIN_A13;
+uint8_t redLedPin = PIN2;
+uint8_t greenLedPin = PIN3;
 
 boolean isCharacterValid(char character);
-boolean parametersAreValid(int wordsPerMinute, String message);
+boolean parametersAreValid(String message);
+
+String message = "EVERY DAY IS REMI DAY";
+
+boolean doRunProgram;
+int index;
 
 void setup()
 {
-  // Open the serial port at 9600 bps
   Serial.begin(9600);
-  Serial.println("-- setup start --");
+  SetLogLevel(Debug);
+  LogTrace("-- setup start --");
 
-  Serial.print("wordsPerMinute: ");
-  Serial.println(wordsPerMinute);
-
-  Serial.print("message: ");
-  Serial.println(message);
-
-  doRunProgram = parametersAreValid(wordsPerMinute, message);
-  Serial.print("doRunProgram: ");
-  Serial.println(doRunProgram);
-
-  if (!doRunProgram)
-  {
-    return;
-  }
-
-  pinMode(LED_BUILTIN, OUTPUT);
-  pinMode(13, OUTPUT);
-
+  pinMode(buzzerPin, OUTPUT);
   pinMode(redLedPin, OUTPUT);
   pinMode(greenLedPin, OUTPUT);
 
-  const float secondsPerUnit = 60.0 / (float)(50 * wordsPerMinute);
-  millisecondsPerUnit = (int)(secondsPerUnit * 1000.0);
+  LogInfo("message", message);
 
-  Serial.print("millisecondsPerUnit: ");
-  Serial.println(millisecondsPerUnit);
+  doRunProgram = parametersAreValid(message);
+  LogDebug("doRunProgram", doRunProgram);
 
-  morseCodeForMessage = convertToMorseCode(message);
-  Serial.print("morseCodeForMessage: ");
-  Serial.println(morseCodeForMessage);
+  index = 0;
+  LogDebug("index", index);
 
-  Serial.println("-- setup end --");
+  if (!doRunProgram)
+  {
+    LogWarn("Message contains invalid characters. Not running program");
+
+    return;
+  }
+
+  LogTrace("-- setup end --");
 }
 
 void loop()
 {
-  Serial.println("-- loop start --");
+  LogTrace("-- loop start --");
 
   if (!doRunProgram)
   {
     return;
   }
 
-  blinkMessageSpacer(millisecondsPerUnit);
+  const int potentiometerValue = analogRead(potentiometerPin);
+  LogDebug("potentiometerValue", potentiometerValue);
 
-  const int size = morseCodeForMessage.length();
+  const int wordsPerMinute = map(potentiometerValue, 0, 1023, 0, 60);
+  const float secondsPerUnit = 60.0 / (float)(50 * wordsPerMinute);
+  const int millisecondsPerUnit = (int)(secondsPerUnit * 1000.0);
+  LogDebug("millisecondsPerUnit", millisecondsPerUnit);
+
+  LogTrace("index", index);
+
+  const char charAtIndex = message.charAt(index);
+  LogTrace("charAtIndex", charAtIndex);
+
+  const String morseCodeForCharAtIndex = getMorseCodeForCharacter(charAtIndex);
+
   int i;
-  for (i = 0; i < size; i++)
+  for (i = 0; i < (int)morseCodeForCharAtIndex.length(); i++)
   {
-    char code = morseCodeForMessage.charAt(i);
-
-    Serial.print(code);
-
-    switch (code)
+    const char currentChar = morseCodeForCharAtIndex.charAt(i);
+    switch (currentChar)
     {
     case DOT:
       blinkDot(millisecondsPerUnit);
-      blinkDotDashSpacer(millisecondsPerUnit);
       break;
 
     case DASH:
       blinkDash(millisecondsPerUnit);
-      blinkDotDashSpacer(millisecondsPerUnit);
-      break;
-
-    case SPACE:
-      blinkCharacterSpacer(millisecondsPerUnit);
       break;
 
     case SLASH:
       blinkWordSpacer(millisecondsPerUnit);
       break;
+
+    default:
+      break;
     }
+
+    blinkDotDashSpacer(millisecondsPerUnit);
   }
 
-  Serial.print(NEWLINE);
+  if (index < (int)message.length() - 1)
+  {
+    index++;
+    blinkCharacterSpacer(millisecondsPerUnit);
+  }
+  else
+  {
+    index = 0;
+    blinkMessageSpacer(millisecondsPerUnit);
+  }
 
-  Serial.println("-- loop start --");
+  LogTrace("-- loop end --");
 }
 
-boolean parametersAreValid(int wordsPerMinute, String message)
+boolean parametersAreValid(String message)
 {
-  if (wordsPerMinute < 0)
-  {
-    return false;
-  }
-
   const int messageLength = message.length();
   int i;
   for (i = 0; i < messageLength; i++)
@@ -128,7 +132,7 @@ boolean parametersAreValid(int wordsPerMinute, String message)
 boolean isCharacterValid(char character)
 {
   const int asciiCode = (int)character;
-  boolean isValidChar = asciiCode == 32 || (asciiCode >= 48 && asciiCode <= 57) || (asciiCode >= 65 && asciiCode <= 90);
+  boolean isValid = asciiCode == 32 || (asciiCode >= 48 && asciiCode <= 57) || (asciiCode >= 65 && asciiCode <= 90);
 
-  return isValidChar;
+  return isValid;
 }

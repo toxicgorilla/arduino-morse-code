@@ -16,7 +16,7 @@ String convertToMorseCode(String plainText)
     {
       morseCode += codeForCharacter;
 
-      // Add space between dits/dashed, except for the final character
+      // Add space between dots/dashes, except for the final character
       if (i <= plainTextLength - 1)
       {
         morseCode += " ";
